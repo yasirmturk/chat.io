@@ -11,7 +11,7 @@ var TwitterStrategy  	= require('passport-twitter').Strategy;
 var User = require('../models/user');
 
 /**
- * Encapsulates all code for authentication 
+ * Encapsulates all code for authentication
  * Either by using username and password, or by using social accounts
  *
  */
@@ -35,17 +35,16 @@ var init = function(){
 	      if (err) { return done(err); }
 
 	      if (!user) {
-	        return done(null, false, { message: 'Incorrect username or password.' });
+	        return done(null, false, { message: 'Incorrect username.' });
 	      }
 
 	      user.validatePassword(password, function(err, isMatch) {
 	        	if (err) { return done(err); }
 	        	if (!isMatch){
-	        		return done(null, false, { message: 'Incorrect username or password.' });
+	        		return done(null, false, { message: 'Incorrect password.' });
 	        	}
 	        	return done(null, user);
 	      });
-
 	    });
 	  }
 	));
@@ -55,7 +54,7 @@ var init = function(){
 	var verifySocialAccount = function(tokenA, tokenB, data, done) {
 		User.findOrCreate(data, function (err, user) {
 	      	if (err) { return done(err); }
-			return done(err, user); 
+			return done(err, user);
 		});
 	};
 
@@ -65,5 +64,5 @@ var init = function(){
 
 	return passport;
 }
-	
+
 module.exports = init();

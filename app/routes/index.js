@@ -7,6 +7,9 @@ var passport 	= require('passport');
 var User = require('../models/user');
 var Room = require('../models/room');
 
+// APIs
+router.use('/api', require('./api'));
+
 // Home page
 router.get('/', function(req, res, next) {
 	// If user is already logged in, then redirect to rooms page
@@ -16,15 +19,15 @@ router.get('/', function(req, res, next) {
 	else{
 		res.render('login', {
 			success: req.flash('success')[0],
-			errors: req.flash('error'), 
+			errors: req.flash('error'),
 			showRegisterForm: req.flash('showRegisterForm')[0]
 		});
 	}
 });
 
 // Login
-router.post('/login', passport.authenticate('local', { 
-	successRedirect: '/rooms', 
+router.post('/login', passport.authenticate('local', {
+	successRedirect: '/rooms',
 	failureRedirect: '/',
 	failureFlash: true
 }));
@@ -83,17 +86,17 @@ router.get('/rooms', [User.isAuthenticated, function(req, res, next) {
 	});
 }]);
 
-// Chat Room 
+// Chat Room
 router.get('/chat/:id', [User.isAuthenticated, function(req, res, next) {
 	var roomId = req.params.id;
 	Room.findById(roomId, function(err, room){
 		if(err) throw err;
 		if(!room){
-			return next(); 
+			return next();
 		}
 		res.render('chatroom', { user: req.user, room: room });
 	});
-	
+
 }]);
 
 // Logout

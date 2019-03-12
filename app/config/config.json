@@ -20,8 +20,8 @@
 		"profileFields": ["id", "displayName", "photos"]
 	},
 	"redis": {
-		"host": "127.0.0.1",
-		"port": 6379,
-		"password": ""
+		"host": "redis-16774.c60.us-west-1-2.ec2.cloud.redislabs.com",
+		"port": 16774,
+		"password": "vFMCgENYsKbuCOjWoKgWnDQQFootqvQF"
 	}
 }

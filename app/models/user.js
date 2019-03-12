@@ -34,7 +34,7 @@ var findOrCreate = function(data, callback){
 			};
 
 			// To avoid expired Facebook CDN URLs
-			// Request user's profile picture using user id 
+			// Request user's profile picture using user id
 			// @see http://stackoverflow.com/a/34593933/6649553
 			if(data.provider == "facebook" && userData.picture){
 				userData.picture = "http://graph.facebook.com/" + data.id + "/picture?type=large";
@@ -59,10 +59,10 @@ var isAuthenticated = function (req, res, next) {
 	}
 }
 
-module.exports = { 
-	create, 
-	findOne, 
-	findById, 
-	findOrCreate, 
-	isAuthenticated 
+module.exports = {
+	create,
+	findOne,
+	findById,
+	findOrCreate,
+	isAuthenticated
 };
