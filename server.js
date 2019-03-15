@@ -11,7 +11,10 @@ var flash 		= require('connect-flash');
 var routes 		= require('./app/routes');
 var session 	= require('./app/session');
 var passport    = require('./app/auth');
-var ioServer 	= require('./app/socket')(app);
+var passportInit = passport.initialize();
+var passportSession = passport.session();
+
+var ioServer 	= require('./app/socket')(app, session);
 var logger 		= require('./app/logger');
 
 // Set the port number
@@ -27,8 +30,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
 app.use(session);
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passportInit);
+app.use(passportSession);
 app.use(flash());
 
 app.use('/', routes);

@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
-const passport = require('passport');
 const router = require('express').Router();
+const passport = require('passport');
 const auth = require('../auth');
 
-// var User = require('../models/user');
-// const User = mongoose.model('User');
 var User = require('../../models/user');
+var Room = require('../../models/room');
 
 //POST new user route (optional, everyone has access)
 router.post('/', auth.optional, (req, res, next) => {
@@ -46,15 +45,14 @@ router.post('/', auth.optional, (req, res, next) => {
 		} else {
 			User.create(user, (err, finalUser) => {
 				if(err) { return next(err); }
-				res.json({ user: finalUser.toAuthJSON() })
+				Room.create({ title: finalUser.username, owner: finalUser }, function(err, newRoom){
+					if(err) { return next(err); }
+
+					res.json({ user: finalUser.toAuthJSON(), room: newRoom })
+				});
 			});
 		}
 	});
-
-  // const finalUser = new User(user);
-  // finalUser.setPassword(user.password);
-  // return finalUser.save()
-  //   .then(() => res.json({ user: finalUser.toAuthJSON() }));
 });
 
 //POST login route (optional, everyone has access)
@@ -79,7 +77,7 @@ console.log(req.body);
     });
   }
 
-  return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+  return passport.authenticate('local', {session: false}, (err, passportUser, info) => {
     if(err) { return next(err); }
 
     if(passportUser) {
@@ -87,22 +85,26 @@ console.log(req.body);
       user.token = passportUser.generateJWT();
       return res.json({ user: user.toAuthJSON() });
     }
-console.log(info);
+		console.log(info);
     return res.status(400).json({errors: info});
   })(req, res, next);
 });
 
 //GET current route (required, only authenticated users have access)
 router.get('/current', auth.required, (req, res, next) => {
-  const { payload: { id } } = req;
+	console.log(`obj session: ${req.session.passport}`);
+	const { payload: { id } } = req;
 
-  return User.findById(id, (err, user) => {
-      if(!user) {
-        return res.sendStatus(400);
-      }
+	return User.findById(id, (err, user) => {
+		if(err) { return next(err); }
+		if(!user) { return res.sendStatus(400); }
 
-      return res.json({ user: user.toAuthJSON() });
-    });
+		Room.findOrCreate({ title: user.username, owner: user }, function(err, newRoom){
+			if(err) { return next(err); }
+
+			res.json({ user: {...user.toAuthJSON(), profile: user }, room: newRoom })
+		});
+	});
 });
 
 module.exports = router;

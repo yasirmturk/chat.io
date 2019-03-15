@@ -51,13 +51,15 @@ var findOrCreate = function(data, callback){
  * A middleware allows user to get access to pages ONLY if the user is already logged in.
  *
  */
-var isAuthenticated = function (req, res, next) {
-	if(req.isAuthenticated()){
-		next();
-	}else{
-		res.redirect('/');
-	}
-}
+ var isAuthenticated = function (req, res, next) {
+	 if(req.isAuthenticated()){
+		 next();
+	 } else {
+		 return res.status(401).json({
+			 error: 'User not authenticated'
+		 });
+	 }
+ }
 
 module.exports = {
 	create,

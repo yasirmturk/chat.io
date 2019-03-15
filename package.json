@@ -1,5 +1,5 @@
 {
-  "name": "chat.io",
+  "name": "Insight",
   "version": "1.0.0",
   "description": "A Real Time Chat Application built using Node.js, Express, Mongoose, Socket.io, Passport, & Redis.",
   "scripts": {
@@ -21,6 +21,7 @@
     "body-parser": "^1.15.2",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^1.3.2",
+    "cookie-parser": "^1.4.4",
     "ejs": "^2.5.1",
     "express": "^4.14.0",
     "express-jwt": "^5.3.1",
@@ -31,6 +32,7 @@
     "passport-facebook": "^2.1.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
+    "passport.socketio": "^3.7.0",
     "redis": "^2.6.2",
     "socket.io": "^2.0.3",
     "socket.io-redis": "^5.1.0",

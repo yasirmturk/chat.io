@@ -1,16 +1,17 @@
 'use strict';
 
-var config 	= require('../config');
-var redis 	= require('redis').createClient;
-var adapter = require('socket.io-redis');
+const config 	= require('../config');
+const redis 	= require('redis').createClient;
+const adapter = require('socket.io-redis');
+const jwt = require('jsonwebtoken');
 
-var Room = require('../models/room');
+const Room = require('../models/room');
 
 /**
  * Encapsulates all code for emitting and listening to socket events
  *
  */
-var ioEvents = function(io) {
+const ioEvents = function(io) {
 
 	// Rooms namespace
 	io.of('/rooms').on('connection', function(socket) {
@@ -22,7 +23,7 @@ var ioEvents = function(io) {
 				if(room){
 					socket.emit('updateRoomsList', { error: 'Room title already exists.' });
 				} else {
-					Room.create({ 
+					Room.create({
 						title: title
 					}, function(err, newRoom){
 						if(err) throw err;
@@ -36,7 +37,7 @@ var ioEvents = function(io) {
 
 	// Chatroom namespace
 	io.of('/chatroom').on('connection', function(socket) {
-
+		// console.log('chatroom request');
 		// Join a chatroom
 		socket.on('join', function(roomId) {
 			Room.findById(roomId, function(err, room){
@@ -46,8 +47,10 @@ var ioEvents = function(io) {
 					// Then, if a room doesn't exist here, return an error to inform the client-side.
 					socket.emit('updateUsersList', { error: 'Room doesnt exist.' });
 				} else {
+					// console.log(`user in session: ${socket.request.session.passport}`);
 					// Check if user exists in the session
 					if(socket.request.session.passport == null){
+						console.log('session is not valid for this request');
 						return;
 					}
 
@@ -58,11 +61,11 @@ var ioEvents = function(io) {
 
 						Room.getUsers(newRoom, socket, function(err, users, cuntUserInRoom){
 							if(err) throw err;
-							
+
 							// Return list of all user connected to the room to the current user
 							socket.emit('updateUsersList', users, true);
 
-							// Return the current user to other connecting sockets in the room 
+							// Return the current user to other connecting sockets in the room
 							// ONLY if the user wasn't connected already to the current room
 							if(cuntUserInRoom === 1){
 								socket.broadcast.to(newRoom.id).emit('updateUsersList', users[users.length - 1]);
@@ -75,13 +78,13 @@ var ioEvents = function(io) {
 
 		// When a socket exits
 		socket.on('disconnect', function() {
-
+			console.log('socket disconnected');
 			// Check if user exists in the session
 			if(socket.request.session.passport == null){
 				return;
 			}
 
-			// Find the room to which the socket is connected to, 
+			// Find the room to which the socket is connected to,
 			// and remove the current user + socket from this room
 			Room.removeUser(socket, function(err, room, userId, cuntUserInRoom){
 				if(err) throw err;
@@ -103,7 +106,7 @@ var ioEvents = function(io) {
 			// No need to emit 'addMessage' to the current socket
 			// As the new message will be added manually in 'main.js' file
 			// socket.emit('addMessage', message);
-			
+
 			socket.broadcast.to(roomId).emit('addMessage', message);
 		});
 
@@ -115,7 +118,7 @@ var ioEvents = function(io) {
  * Uses Redis as Adapter for Socket.io
  *
  */
-var init = function(app){
+var init = function(app, session){
 
 	var server 	= require('http').Server(app);
 	var io 		= require('socket.io')(server);
@@ -133,7 +136,25 @@ var init = function(app){
 
 	// Allow sockets to access session data
 	io.use((socket, next) => {
-		require('../session')(socket.request, {}, next);
+		session(socket.request, {}, next);
+	});
+
+	io.use(function(socket, next){
+		if (socket.request.session.passport) {
+			// console.log(`obj session: ${JSON.stringify(socket.request.session.passport)}`);
+			next();
+		} else if(socket.handshake.query && socket.handshake.query.token) {
+			// console.log(`obj token: ${JSON.stringify(socket.handshake.query)}`);
+			jwt.verify(socket.handshake.query.token, 'secret', function(err, decoded) {
+				if(err) return next(new Error('Authentication error'));
+				console.log(`obj decoded: ${JSON.stringify(decoded)}`);
+				socket.request.session.passport = { user: decoded.id };
+				next();
+			});
+		} else {
+			// console.log(`obj failed`);
+			next(new Error('Authentication error'));
+		}
 	});
 
 	// Define all Events

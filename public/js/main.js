@@ -35,7 +35,7 @@ var app = {
   },
 
   chat: function(roomId, username){
-    
+
     var socket = io('/chatroom', { transports: ['websocket'] });
 
       // When socket connects, join the current chatroom
@@ -60,8 +60,9 @@ var app = {
           var textareaEle = $("textarea[name='message']");
           var messageContent = textareaEle.val().trim();
           if(messageContent !== '') {
-            var message = { 
-              content: messageContent, 
+            var message = {
+							id: Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36),
+              content: messageContent,
               username: username,
               date: Date.now()
             };
@@ -78,7 +79,7 @@ var app = {
           app.helpers.updateNumOfUsers();
         });
 
-        // Append a new message 
+        // Append a new message
         socket.on('addMessage', function(message) {
           app.helpers.addMessage(message);
         });
@@ -104,7 +105,7 @@ var app = {
       }else{
         $('.room-list ul').html('').html(html);
       }
-      
+
       this.updateNumOfRooms();
     },
 

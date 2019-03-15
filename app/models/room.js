@@ -25,11 +25,34 @@ var findByIdAndUpdate = function(id, data, callback){
 }
 
 /**
+ * Find a user, and create one if doesn't exist already.
+ * This method is used ONLY to find user accounts registered via Social Authentication.
+ *
+ */
+var findOrCreate = function(data, callback){
+	findOne({ title: data.title }, function(err, room){
+		if(err) { return callback(err); }
+		if(room){
+			return callback(err, room);
+		} else {
+			var roomData = {
+				title: data.title,
+				owner: data.owner
+			};
+
+			create(roomData, function(err, newRoom){
+				callback(err, newRoom);
+			});
+		}
+	});
+}
+
+/**
  * Add a user along with the corresponding socket to the passed room
  *
  */
 var addUser = function(room, socket, callback){
-	
+
 	// Get current user's id
 	var userId = socket.request.session.passport.user;
 
@@ -66,13 +89,13 @@ var getUsers = function(room, socket, callback){
 	// Loop on each user id, Then:
 	// Get the user object by id, and assign it to users array.
 	// So, users array will hold users' objects instead of ids.
-	var loadedUsers = 0;		
+	var loadedUsers = 0;
 	users.forEach(function(userId, i){
 		User.findById(userId, function(err, user){
 			if (err) { return callback(err); }
 			users[i] = user;
 
-			// fire callback when all users are loaded (async) from database 
+			// fire callback when all users are loaded (async) from database
 			if(++loadedUsers === users.length){
 				return callback(null, users, cunt);
 			}
@@ -96,7 +119,7 @@ var removeUser = function(socket, callback){
 		rooms.every(function(room){
 			var pass = true, cunt = 0, target = 0;
 
-			// For every room, 
+			// For every room,
 			// 1. Count the number of connections of the current user(using one or more sockets).
 			room.connections.forEach(function(conn, i){
 				if(conn.userId === userId){
@@ -107,7 +130,7 @@ var removeUser = function(socket, callback){
 				}
 			});
 
-			// 2. Check if the current room has the disconnected socket, 
+			// 2. Check if the current room has the disconnected socket,
 			// If so, then, remove the current connection object, and terminate the loop.
 			if(!pass) {
 				room.connections.id(room.connections[target]._id).remove();
@@ -121,12 +144,13 @@ var removeUser = function(socket, callback){
 	});
 }
 
-module.exports = { 
-	create, 
-	find, 
-	findOne, 
-	findById, 
-	addUser, 
-	getUsers, 
-	removeUser 
+module.exports = {
+	create,
+	find,
+	findOne,
+	findById,
+	findOrCreate,
+	addUser,
+	getUsers,
+	removeUser
 };
