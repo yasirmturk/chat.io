@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = require('express').Router();
 const auth = require('../auth');
 
-var User = require('../../models/user');
-var Leaderboard = require('../../models/leaderboard');
+const User = require('../../models/user');
+const Leaderboard = require('../../models/leaderboard');
 
 //GET current route (required, only authenticated users have access)
 router.get('/current', auth.required, (req, res, next) => {

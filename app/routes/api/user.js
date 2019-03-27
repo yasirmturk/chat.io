@@ -107,4 +107,37 @@ router.get('/current', auth.required, (req, res, next) => {
 	});
 });
 
+// GET
+router.get('/followers/:userId', auth.required, (req, res, next) => {
+	const { payload: { id } } = req;
+
+	return User.findById(id, (err, user) => {
+		if(err) { return next(err); }
+		if(!user) { return res.sendStatus(400); }
+
+		User.followers(user, (err, followers) => {
+			if(err) { return next(err); }
+
+			res.json({ followers: followers })
+		});
+	});
+});
+
+// GET
+router.get('/followings/:userId', auth.required, (req, res, next) => {
+	const { payload: { id } } = req;
+
+	return User.findById(id, (err, user) => {
+		if(err) { return next(err); }
+		if(!user) { return res.sendStatus(400); }
+
+		User.followings(user, (err, followings) => {
+			if(err) { return next(err); }
+
+			res.json({ followings: followings })
+		});
+	});
+});
+
+
 module.exports = router;

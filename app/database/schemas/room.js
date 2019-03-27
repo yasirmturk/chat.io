@@ -1,14 +1,14 @@
 'use strict';
 
-var Mongoose  = require('mongoose');
-var Schema = Mongoose.Schema;
+const Mongoose  = require('mongoose');
+const Schema = Mongoose.Schema;
 
 /**
  * Each connection object represents a user connected through a unique socket.
  * Each connection object composed of {userId + socketId}. Both of them together are unique.
  *
  */
- var RoomSchema = new Schema({
+ const RoomSchema = new Schema({
 	 title: { type: String, required: true },
 	 owner: { type: Schema.Types.ObjectId, ref: 'user', required: true },
 	 connections: {
@@ -16,6 +16,4 @@ var Schema = Mongoose.Schema;
 	 }
  });
 
-var roomModel = Mongoose.model('room', RoomSchema);
-
-module.exports = roomModel;
+module.exports = Mongoose.model('room', RoomSchema);

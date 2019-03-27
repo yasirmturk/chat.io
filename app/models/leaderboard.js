@@ -1,7 +1,6 @@
 'use strict';
 
-var userModel = require('../database').models.user;
-var followedModel = require('../database').models.followed;
+const userModel = require('../database').models.user;
 
 var topUsers = function(excludeIds, callback) {
 	return userModel.aggregate([{
@@ -11,8 +10,10 @@ var topUsers = function(excludeIds, callback) {
 			username: 1,
 			fullname: 1,
 			email: 1,
+			picture: 1,
 			followers: 1,
 			followerCount: { $size: "$followers" },
+			followingCount: { $size: "$following" },
 			// isFollowing: { $setIntersection: ["$followers", userModel.mapIDs(excludeIds)] },
 			isFollowing: { $setIsSubset: [userModel.mapIDs(excludeIds), "$followers"] },
 			// isFollowing3: { $in: [userModel.mapIDs(excludeIds)[0], "$followers"] },

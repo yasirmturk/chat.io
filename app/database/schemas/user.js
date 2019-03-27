@@ -1,8 +1,8 @@
 'use strict';
 
-var Mongoose 	= require('mongoose');
-var Schema = Mongoose.Schema;
-var bcrypt      = require('bcrypt-nodejs');
+const Mongoose 	= require('mongoose');
+const Schema = Mongoose.Schema;
+const bcrypt      = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 
 const SALT_WORK_FACTOR = 10;
@@ -17,7 +17,7 @@ const DEFAULT_USER_PICTURE = "/img/user.jpg";
  * 2. Hash user's password
  *
  */
- var UserSchema = new Schema({
+ const UserSchema = new Schema({
 	 email: { type: String, required: true, trim: true },
 	 username: { type: String, required: true, trim: true },
 	 fullname: { type: String, default: null },
@@ -107,6 +107,4 @@ UserSchema.methods.follow = function(leader) {
 };
 
 // Create a user model
-var userModel = Mongoose.model('user', UserSchema);
-
-module.exports = userModel;
+module.exports = Mongoose.model('user', UserSchema);

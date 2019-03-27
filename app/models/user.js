@@ -1,17 +1,17 @@
 'use strict';
 
-var userModel = require('../database').models.user;
+const userModel = require('../database').models.user;
 
-var create = function (data, callback){
+const create = function (data, callback){
 	var newUser = new userModel(data);
 	newUser.save(callback);
 };
 
-var findOne = function (data, callback){
+const findOne = function (data, callback){
 	userModel.findOne(data, callback);
 }
 
-var findById = function (id, callback){
+const findById = function (id, callback){
 	userModel.findById(id, callback);
 }
 
@@ -21,7 +21,7 @@ var findById = function (id, callback){
  * This method is used ONLY to find user accounts registered via Social Authentication.
  *
  */
-var findOrCreate = function(data, callback){
+const findOrCreate = function(data, callback){
 	findOne({'socialId': data.id}, function(err, user){
 		if(err) { return callback(err); }
 		if(user){
@@ -51,7 +51,7 @@ var findOrCreate = function(data, callback){
  * A middleware allows user to get access to pages ONLY if the user is already logged in.
  *
  */
- var isAuthenticated = function (req, res, next) {
+ const isAuthenticated = (req, res, next) => {
 	 if(req.isAuthenticated()){
 		 next();
 	 } else {
@@ -61,10 +61,60 @@ var findOrCreate = function(data, callback){
 	 }
  }
 
+/**
+*
+*/
+const followers = (user, callback) => {
+	return userModel.aggregate([{
+		$match: { _id: { $in: userModel.mapIDs(user.followers) } }
+	}, {
+		$project: {
+			username: 1,
+			fullname: 1,
+			email: 1,
+			picture: 1,
+			followerCount: { $size: "$followers" },
+			followingCount: { $size: "$following" },
+			isFollowing: { $setIsSubset: [[user._id], "$followers"] },
+		}
+	}]).then(result => {
+		console.log(`followers count ${result.length}`);
+		callback(null, result);
+	}).catch(err => {
+		callback(err, null);
+	});
+}
+
+/**
+*
+*/
+const followings = (user, callback) => {
+	return userModel.aggregate([{
+		$match: { _id: { $in: userModel.mapIDs(user.following) } }
+	}, {
+		$project: {
+			username: 1,
+			fullname: 1,
+			email: 1,
+			picture: 1,
+			followerCount: { $size: "$followers" },
+			followingCount: { $size: "$following" },
+			isFollowing: { $setIsSubset: [[user._id], "$followers"] },
+		}
+	}]).then(result => {
+		console.log(`followings count ${result.length}`);
+		callback(null, result);
+	}).catch(err => {
+		callback(err, null);
+	});
+}
+
 module.exports = {
 	create,
 	findOne,
 	findById,
 	findOrCreate,
-	isAuthenticated
+	isAuthenticated,
+	followers,
+	followings
 };
