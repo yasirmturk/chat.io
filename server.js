@@ -1,11 +1,11 @@
 'use strict';
 
 // Chat application dependencies
-var express 	= require('express');
-var app  		= express();
-var path 		= require('path');
+var express 		= require('express');
+var app  				= express();
+var path 				= require('path');
 var bodyParser 	= require('body-parser');
-var flash 		= require('connect-flash');
+var flash 			= require('connect-flash');
 
 // Chat application components
 var routes 		= require('./app/routes');

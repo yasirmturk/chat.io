@@ -6,7 +6,7 @@ const bcrypt      = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 
 const SALT_WORK_FACTOR = 10;
-const DEFAULT_USER_PICTURE = "/img/user.jpg";
+const DEFAULT_USER_PICTURE = "https://img.icons8.com/cotton/64/000000/administrator-male.png";
 
 /**
  * Every user has a username, password, socialId, and a picture.

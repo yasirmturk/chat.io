@@ -15,7 +15,6 @@ const findById = function (id, callback){
 	userModel.findById(id, callback);
 }
 
-
 /**
  * Find a user, and create one if doesn't exist already.
  * This method is used ONLY to find user accounts registered via Social Authentication.
@@ -44,6 +43,18 @@ const findOrCreate = function(data, callback){
 				callback(err, newUser);
 			});
 		}
+	});
+}
+
+const updateDP = function (id, picture, callback) {
+	userModel.findByIdAndUpdate(id, { picture: picture })
+	// userModel.findById(id)
+	.then(user => {
+		// user.picture = picture;
+		// user.save(callback);
+		callback(null, user);
+	}).catch(err => {
+		callback(err)
 	});
 }
 
@@ -114,6 +125,7 @@ module.exports = {
 	findOne,
 	findById,
 	findOrCreate,
+	updateDP,
 	isAuthenticated,
 	followers,
 	followings
