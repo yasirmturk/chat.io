@@ -6,13 +6,14 @@ var Mongoose 	= require('mongoose');
 
 // Connect to the database
 // construct the database URI and encode username and password.
-// var dbURI = "mongodb://" +
-// 			encodeURIComponent(config.db.username) + ":" +
-// 			encodeURIComponent(config.db.password) + "@" +
-// 			config.db.host + ":" +
-// 			config.db.port + "/" +
-// 			config.db.name;
-var dbURI = "mongodb://new-user_31:DWgAYE3JBCIwSb7L@cluster0-shard-00-00-v9ca0.mongodb.net:27017,cluster0-shard-00-01-v9ca0.mongodb.net:27017,cluster0-shard-00-02-v9ca0.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true";
+var dbURI = "mongodb://" +
+			encodeURIComponent(config.db.username) + ":" +
+			encodeURIComponent(config.db.password) + "@" +
+			config.db.host + ":" +
+			config.db.port + "/" +
+			config.db.name + "?" +
+			config.db.options;
+// var dbURI = "mongodb://new-user_31:DWgAYE3JBCIwSb7L@cluster0-shard-00-00-v9ca0.mongodb.net:27017,cluster0-shard-00-01-v9ca0.mongodb.net:27017,cluster0-shard-00-02-v9ca0.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true";
 Mongoose.connect(dbURI, { useNewUrlParser: true });
 
 // Throw an error if the connection fails

@@ -11,7 +11,8 @@ var init = function () {
 				password: process.env.dbPassword,
 				host: process.env.dbHost,
 				port: process.env.dbPort,
-				name: process.env.dbName
+				name: process.env.dbName,
+				options: process.env.dbOptions,
 			},
 			sessionSecret: process.env.sessionSecret,
 			facebook: {
@@ -30,10 +31,21 @@ var init = function () {
 				host: redisURI.hostname,
 				port: redisURI.port,
 				password: redisPassword
+			},
+			storage: {
+				aws: {
+					key: process.env.awsKey,
+					secret: process.env.awsSecret
+				}
+			},
+			ai: {
+				transloadit: {
+					key: process.env.transloaditKey,
+					secret: process.env.transloaditSecret
+				}
 			}
 		}
-	}
-	else {
+	} else {
 		return require('./config.json');
 	}
 }

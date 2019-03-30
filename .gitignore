@@ -3,3 +3,6 @@ node_modules
 
 # Logs
 debug.log
+
+# Dev config
+config.json

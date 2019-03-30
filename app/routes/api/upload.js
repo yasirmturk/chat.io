@@ -3,14 +3,16 @@ const router = require('express').Router();
 const passport = require('passport');
 const auth = require('../auth');
 
+const config 	= require('../../config');
+
 var User = require('../../models/user');
 
 // const request 		= require('request');
 // const fs 					= require('fs');
 // const Transloadit = require('transloadit');
 // const transloadit = new Transloadit({
-// 	authKey   : '3ded348a27bc451ba950541ef103e635',
-// 	authSecret: 'd24f21fc95f39e5980ff4e1d28812a5e66fb60a3'
+// 	authKey   : config.ai.transloadit.key,
+// 	authSecret: config.ai.transloadit.secret
 // });
 // const options = {
 //   waitForCompletion: true,
@@ -24,12 +26,12 @@ const multer 		= require('multer');
 const multerS3 	= require('multer-s3');
 
 aws.config.update({
-    secretAccessKey: 'PkQQsCZuVPj/gg1LVKftawgdv3v5kWMTiwZXvTSK',
-    accessKeyId: 'AKIAJ3ISSXXV4X334U3Q',
+    secretAccessKey: config.storage.aws.secret,
+    accessKeyId: config.storage.aws.key,
     region: 'us-east-1'
 });
-const s3  			= new aws.S3();
 
+const s3  			= new aws.S3();
 const upload = multer({
 	storage: multerS3({
 		s3: s3,
@@ -50,6 +52,7 @@ const upload = multer({
 //upload.array('upl', 1)
 router.post('/dp', auth.required, upload.single('upl'), (req, res, next) => {
 	const { payload: { id } } = req;
+	console.log(`upload/dp: ${id}`);
 
 	console.log(req.file);
 	const file = req.file;

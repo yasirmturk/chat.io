@@ -47,12 +47,12 @@ const findOrCreate = function(data, callback){
 }
 
 const updateDP = function (id, picture, callback) {
-	userModel.findByIdAndUpdate(id, { picture: picture })
-	// userModel.findById(id)
+	// userModel.findByIdAndUpdate(id, { picture: picture })
+	userModel.findById(id)
 	.then(user => {
-		// user.picture = picture;
-		// user.save(callback);
-		callback(null, user);
+		user.picture = picture;
+		user.save(callback);
+		// callback(null, user);
 	}).catch(err => {
 		callback(err)
 	});
