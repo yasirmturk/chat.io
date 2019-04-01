@@ -58,6 +58,20 @@ const updateDP = function (id, picture, callback) {
 	});
 }
 
+const updateOptions = function (id, postDays, callback) {
+	// userModel.findByIdAndUpdate(id, { picture: picture })
+	userModel.findById(id)
+	.then(user => {
+		let options = user.options;
+		options.post = { daysToKeep: postDays }
+		user.options = options;
+		user.save(callback);
+		// callback(null, user);
+	}).catch(err => {
+		callback(err)
+	});
+}
+
 /**
  * A middleware allows user to get access to pages ONLY if the user is already logged in.
  *
@@ -126,6 +140,7 @@ module.exports = {
 	findById,
 	findOrCreate,
 	updateDP,
+	updateOptions,
 	isAuthenticated,
 	followers,
 	followings

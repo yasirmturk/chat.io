@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const SALT_WORK_FACTOR = 10;
 const DEFAULT_USER_PICTURE = "https://img.icons8.com/cotton/64/000000/administrator-male.png";
+const DEFAULT_POST_DAYS = 30;
 
 /**
  * Every user has a username, password, socialId, and a picture.
@@ -28,8 +29,11 @@ const DEFAULT_USER_PICTURE = "https://img.icons8.com/cotton/64/000000/administra
 		 provider: { type: String, default: null },
 		 uId: { type: String, default: null }
 	 }],
-	 // following: [ this ],
-	 // followers: [ this ]
+	 options: {
+		 post: {
+			 daysToKeep: { type: Number, default: DEFAULT_POST_DAYS }
+		 }
+	 },
 	 following: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	 followers: [{ type: Schema.Types.ObjectId, ref: 'user' }]
  });

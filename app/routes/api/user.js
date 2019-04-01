@@ -139,5 +139,15 @@ router.get('/followings/:userId', auth.required, (req, res, next) => {
 	});
 });
 
+router.post('/options/post', auth.required, (req, res, next) => {
+	const { payload: { id } } = req;
+	const { days } = req.body;
+
+	User.updateOptions(id, days, (err, user) => {
+		if (err) { return next(err); }
+
+		res.send({ success: true, options: user.options });
+	});
+});
 
 module.exports = router;

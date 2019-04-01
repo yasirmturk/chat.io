@@ -5,7 +5,7 @@ const Schema = Mongoose.Schema;
 
 const PostSchema = new Schema({
 	creator: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-	content: { type: String, required: true },
+	content: { type: String, required: true, trim: true },
 	date: { type: Date, default: Date.now },
 	mentions: {
 		type: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }]
