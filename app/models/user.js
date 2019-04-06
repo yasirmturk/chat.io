@@ -11,8 +11,16 @@ const findOne = function (data, callback){
 	userModel.findOne(data, callback);
 }
 
-const findById = function (id, callback){
+const findById = function(id, callback) {
 	userModel.findById(id, callback);
+}
+
+const findByUsername = function(username, callback) {
+	userModel.findOne({'username': new RegExp('^' + username + '$', 'i')}, callback);
+}
+
+const findByEmail = function(email, callback) {
+	userModel.findOne({ email: { $eq: email } }, callback);
 }
 
 /**
@@ -21,7 +29,7 @@ const findById = function (id, callback){
  *
  */
 const findOrCreate = function(data, callback){
-	findOne({'socialId': data.id}, function(err, user){
+	findOne({ 'socialId': data.id }, function(err, user){
 		if(err) { return callback(err); }
 		if(user){
 			return callback(err, user);
@@ -48,9 +56,19 @@ const findOrCreate = function(data, callback){
 
 const updateDP = function (id, picture, callback) {
 	// userModel.findByIdAndUpdate(id, { picture: picture })
-	userModel.findById(id)
-	.then(user => {
+	userModel.findById(id).then(user => {
 		user.picture = picture;
+		user.save(callback);
+		// callback(null, user);
+	}).catch(err => {
+		callback(err)
+	});
+}
+
+const updateInfo = function (id, data, callback) {
+	// userModel.findByIdAndUpdate(id, { picture: picture })
+	userModel.findById(id).then(user => {
+		Object.keys(data).forEach(key => user[key] = data[key]);
 		user.save(callback);
 		// callback(null, user);
 	}).catch(err => {
@@ -72,6 +90,22 @@ const updateOptions = function (id, postDays, callback) {
 	});
 }
 
+const updatePassword = function (id, data, callback) {
+	userModel.findById(id).then(user => {
+		user.validatePassword(data.oldPassword, (err, isMatch) => {
+			if (err) throw err;
+
+			if(isMatch) {
+				user.password = data.newPassword;
+				user.save(callback);
+			} else {
+				return callback(new Error('Incorrect password.'), null);
+			}
+		});
+	}).catch(err => {
+		callback(err)
+	});
+}
 /**
  * A middleware allows user to get access to pages ONLY if the user is already logged in.
  *
@@ -138,9 +172,13 @@ module.exports = {
 	create,
 	findOne,
 	findById,
+	findByUsername,
+	findByEmail,
 	findOrCreate,
 	updateDP,
+	updateInfo,
 	updateOptions,
+	updatePassword,
 	isAuthenticated,
 	followers,
 	followings

@@ -1,21 +1,21 @@
 'use strict';
 
-var config 		= require('../config');
-var passport 	= require('passport');
-var logger 		= require('../logger');
+const config 		= require('../config');
+const passport 	= require('passport');
+const logger 		= require('../logger');
 
-var LocalStrategy 		= require('passport-local').Strategy;
-var FacebookStrategy  	= require('passport-facebook').Strategy;
-var TwitterStrategy  	= require('passport-twitter').Strategy;
+const LocalStrategy 		= require('passport-local').Strategy;
+const FacebookStrategy  	= require('passport-facebook').Strategy;
+const TwitterStrategy  	= require('passport-twitter').Strategy;
 
-var User = require('../models/user');
+const User = require('../models/user');
 
 /**
  * Encapsulates all code for authentication
  * Either by using username and password, or by using social accounts
  *
  */
-var init = function(){
+const init = function(){
 
 	// Serialize and Deserialize user instances to and from the session.
 	passport.serializeUser(function(user, done) {
@@ -51,7 +51,7 @@ var init = function(){
 
 	// In case of Facebook, tokenA is the access token, while tokenB is the refersh token.
 	// In case of Twitter, tokenA is the token, whilet tokenB is the tokenSecret.
-	var verifySocialAccount = function(tokenA, tokenB, data, done) {
+	const verifySocialAccount = function(tokenA, tokenB, data, done) {
 		User.findOrCreate(data, function (err, user) {
 	      	if (err) { return done(err); }
 			return done(err, user);

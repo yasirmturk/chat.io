@@ -57,9 +57,8 @@ router.post('/', auth.optional, (req, res, next) => {
 
 //POST login route (optional, everyone has access)
 router.post('/authenticate', auth.optional, (req, res, next) => {
-console.log(req.body);
-  // const { body: { user } } = req;
 	const { body: user } = req;
+	// console.log(req.body);
 
   if(!user || !user.username) {
     return res.status(422).json({
@@ -77,7 +76,7 @@ console.log(req.body);
     });
   }
 
-  return passport.authenticate('local', {session: false}, (err, passportUser, info) => {
+  return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
     if(err) { return next(err); }
 
     if(passportUser) {
@@ -92,7 +91,6 @@ console.log(req.body);
 
 //GET current route (required, only authenticated users have access)
 router.get('/current', auth.required, (req, res, next) => {
-	console.log(`obj session: ${req.session.passport}`);
 	const { payload: { id } } = req;
 
 	return User.findById(id, (err, user) => {
@@ -139,14 +137,91 @@ router.get('/followings/:userId', auth.required, (req, res, next) => {
 	});
 });
 
-router.post('/options/post', auth.required, (req, res, next) => {
+// POST
+router.put('/', auth.required, (req, res, next) => {
+	const { payload: { id } } = req;
+	const { fullname, username, email, password } = req.body;
+	// console.log(`userInfo ${JSON.stringify(req.body)}`);
+
+	let userInfo = {};
+	let justFullname = false;
+	if(fullname) {
+		justFullname = true;
+		userInfo['fullname'] = fullname;
+	}
+	if(username) {
+		justFullname = false;
+		userInfo['username'] = username;
+		User.findByUsername(username, function(err, oldUser) {
+			if (err) { return next(err); }
+			if (oldUser) {
+				return res.status(422).json({
+					errors: { username: 'is not available' }
+				});
+			}
+
+			// console.log(`findByUsername ${oldUser}`);
+			User.updateInfo(id, userInfo, (err, user) => {
+				if (err) { return next(err); }
+
+				res.send({ success: true, user: { profile: user } });
+			});
+		});
+	}
+	// Setting email
+	if(email) {
+		justFullname = false;
+		userInfo['email'] = email;
+		User.findByEmail(email, function(err, oldUser) {
+			if (err) { return next(err); }
+			if (oldUser) {
+				return res.status(422).json({
+					errors: { email: 'already associated with another user' }
+				});
+			}
+
+			// console.log(`findByEmail ${oldUser}`);
+			User.updateInfo(id, userInfo, (err, user) => {
+				if (err) { return next(err); }
+
+				res.send({ success: true, user: { profile: user } });
+			});
+		});
+	}
+
+	if(justFullname) {
+		// console.log(`justFullname ${justFullname}`);
+		User.updateInfo(id, userInfo, (err, user) => {
+			if (err) { return next(err); }
+
+			res.send({ success: true, user: { profile: user } });
+		});
+	}
+
+	// if(password) { userInfo['password'] = password; }
+});
+
+// PUT
+router.put('/options/post', auth.required, (req, res, next) => {
 	const { payload: { id } } = req;
 	const { days } = req.body;
 
-	User.updateOptions(id, days, (err, user) => {
+	return User.updateOptions(id, days, (err, user) => {
 		if (err) { return next(err); }
 
 		res.send({ success: true, options: user.options });
+	});
+});
+
+// PUT
+router.put('/password', auth.required, (req, res, next) => {
+	const { payload: { id } } = req;
+	// const { days } = req.body;
+
+	return User.updatePassword(id, req.body, (err, user) => {
+		if (err) { return next(err); }
+
+		res.send({ success: true, user: { profile: user } });
 	});
 });
 

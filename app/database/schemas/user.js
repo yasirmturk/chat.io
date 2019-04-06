@@ -6,7 +6,7 @@ const bcrypt      = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 
 const SALT_WORK_FACTOR = 10;
-const DEFAULT_USER_PICTURE = "https://img.icons8.com/cotton/64/000000/administrator-male.png";
+const DEFAULT_USER_PICTURE = "https://s3.amazonaws.com/insightyasir/public/static/placeholder.png";
 const DEFAULT_POST_DAYS = 30;
 
 /**
@@ -48,12 +48,10 @@ UserSchema.pre('save', function(next) {
     var user = this;
 
     // ensure user picture is set
-    if(!user.picture){
-        user.picture = DEFAULT_USER_PICTURE;
-    }
+    if(!user.picture) { user.picture = DEFAULT_USER_PICTURE; }
 
     // only hash the password if it has been modified (or is new)
-    if (!user.isModified('password')) return next();
+    if(!user.isModified('password')) return next();
 
     // generate a salt
     bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
