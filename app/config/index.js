@@ -1,10 +1,11 @@
 'use strict';
+// const dotenv = require('dotenv').config();
 
-var init = function () {
-
-	if(process.env.NODE_ENV === 'production') {
-		var redisURI 		= require('url').parse(process.env.REDIS_URL);
-		var redisPassword 	= redisURI.auth.split(':')[1];
+const init = function () {
+	const env = process.env.NODE_ENV || 'development';
+	if(env === 'production') {
+		const redisURI 		= require('url').parse(process.env.REDIS_URL);
+		const redisPassword 	= redisURI.auth.split(':')[1];
 		return {
 			db: {
 				username: process.env.dbUsername,
@@ -14,7 +15,7 @@ var init = function () {
 				name: process.env.dbName,
 				options: process.env.dbOptions,
 			},
-			sessionSecret: process.env.sessionSecret,
+			sessionSecret: process.env.SESSION_SECRET,
 			facebook: {
 				clientID: process.env.facebookClientID,
 				clientSecret: process.env.facebookClientSecret,
@@ -33,20 +34,14 @@ var init = function () {
 				password: redisPassword
 			},
 			storage: {
-				aws: {
-					key: process.env.awsKey,
-					secret: process.env.awsSecret
-				}
-			},
-			ai: {
-				transloadit: {
-					key: process.env.transloaditKey,
-					secret: process.env.transloaditSecret
-				}
+					key: process.env.STORAGE_KEY,
+					secret: process.env.STORAGE_SECRET,
+					bucket: process.env.STORAGE_BUCKET,
+					endPoint: process.env.STORAGE_ENDPOINT
 			}
 		}
 	} else {
-		return require('./config.json');
+		return require('./config.json')[env];
 	}
 }
 

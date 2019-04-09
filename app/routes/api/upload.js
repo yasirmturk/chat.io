@@ -3,39 +3,31 @@ const router = require('express').Router();
 const passport = require('passport');
 const auth = require('../auth');
 
-const config 	= require('../../config');
+const config 	= require('../../config').storage;
 
 var User = require('../../models/user');
-
-// const request 		= require('request');
-// const fs 					= require('fs');
-// const Transloadit = require('transloadit');
-// const transloadit = new Transloadit({
-// 	authKey   : config.ai.transloadit.key,
-// 	authSecret: config.ai.transloadit.secret
-// });
-// const options = {
-//   waitForCompletion: true,
-//   params           : {
-//     template_id: '36f9cd4db1244334a9767d6ac4c6c954',
-//   },
-// }
 
 const aws 			= require('aws-sdk');
 const multer 		= require('multer');
 const multerS3 	= require('multer-s3');
 
 aws.config.update({
-    secretAccessKey: config.storage.aws.secret,
-    accessKeyId: config.storage.aws.key,
-    region: 'us-east-1'
+	secretAccessKey: config.secret,
+	accessKeyId: config.key,
+	region: 'us-east-1'
 });
 
-const s3  			= new aws.S3();
+let options = {}
+if (config.endPoint) {
+	// Configure client for use with Spaces
+	options['endpoint'] = new aws.Endpoint(config.endPoint);
+}
+
+const s3  	 = new aws.S3(options);
 const upload = multer({
 	storage: multerS3({
 		s3: s3,
-		bucket: 'insightyasir',
+		bucket: config.bucket,
 		acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: function (req, file, cb) {
@@ -62,15 +54,6 @@ router.post('/dp', auth.required, upload.single('upl'), (req, res, next) => {
 
 		res.send({ success: true, picture: file.location });
 	});
-
-	// transloadit.addStream(file.etag, request(file.location).pipe(fs.createWriteStream(file.etag)));
-	// transloadit.addFile(file.etag, file.location);
-	// transloadit.createAssembly(options, (err, result) => {
-	// 	if (err) { throw err }
-	//
-	// 	console.log({result})
-	// });
-	// res.send({ success: true, user: { _id: file.metadata.user, file: file.location } });
 });
 
 module.exports = router;

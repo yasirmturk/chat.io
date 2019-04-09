@@ -61,19 +61,11 @@ router.post('/authenticate', auth.optional, (req, res, next) => {
 	// console.log(req.body);
 
   if(!user || !user.username) {
-    return res.status(422).json({
-      errors: {
-        username: 'is required',
-      },
-    });
+    return res.status(422).json({ errors: { username: 'is required' } });
   }
 
   if(!user.password) {
-    return res.status(422).json({
-      errors: {
-        password: 'is required',
-      },
-    });
+    return res.status(422).json({ errors: { password: 'is required' } });
   }
 
   return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
@@ -84,7 +76,7 @@ router.post('/authenticate', auth.optional, (req, res, next) => {
       user.token = passportUser.generateJWT();
       return res.json({ user: user.toAuthJSON() });
     }
-		console.log(info);
+		// console.log(info);
     return res.status(400).json({errors: info});
   })(req, res, next);
 });
@@ -93,9 +85,10 @@ router.post('/authenticate', auth.optional, (req, res, next) => {
 router.get('/current', auth.required, (req, res, next) => {
 	const { payload: { id } } = req;
 
+	// console.log(`user.current ${id}`);
 	return User.findById(id, (err, user) => {
 		if(err) { return next(err); }
-		if(!user) { return res.sendStatus(400); }
+		if(!user) { return res.status(401).json(); }
 
 		Room.findOrCreate({ title: user.username, owner: user }, function(err, newRoom){
 			if(err) { return next(err); }
@@ -111,7 +104,7 @@ router.get('/followers/:userId', auth.required, (req, res, next) => {
 
 	return User.findById(id, (err, user) => {
 		if(err) { return next(err); }
-		if(!user) { return res.sendStatus(400); }
+		if(!user) { return res.status(401).json(); }
 
 		User.followers(user, (err, followers) => {
 			if(err) { return next(err); }
@@ -127,7 +120,7 @@ router.get('/followings/:userId', auth.required, (req, res, next) => {
 
 	return User.findById(id, (err, user) => {
 		if(err) { return next(err); }
-		if(!user) { return res.sendStatus(400); }
+		if(!user) { return res.status(401).json(); }
 
 		User.followings(user, (err, followings) => {
 			if(err) { return next(err); }

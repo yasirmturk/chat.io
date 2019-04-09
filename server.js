@@ -1,11 +1,12 @@
 'use strict';
 
 // Chat application dependencies
-var express 		= require('express');
-var app  				= express();
-var path 				= require('path');
-var bodyParser 	= require('body-parser');
-var flash 			= require('connect-flash');
+const compression = require('compression')
+const express 		= require('express');
+const app  				= express();
+const path 				= require('path');
+const bodyParser 	= require('body-parser');
+const flash 			= require('connect-flash');
 
 // Chat application components
 var routes 		= require('./app/routes');
@@ -16,6 +17,9 @@ var passportSession = passport.session();
 
 var ioServer 	= require('./app/socket')(app, session);
 var logger 		= require('./app/logger');
+
+console.log(`process.env: ${process.env.NODE_ENV}`);
+// console.log(`process.env: ${JSON.stringify(process.env)}`);
 
 // Set the port number
 var port = process.env.PORT || 3000;
@@ -28,6 +32,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(compression());
 
 app.use(session);
 app.use(passportInit);

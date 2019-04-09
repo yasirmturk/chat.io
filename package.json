@@ -1,25 +1,28 @@
 {
   "name": "Insight",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A Real Time Chat Application built using Node.js, Express, Mongoose, Socket.io, Passport, & Redis.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "stage": "NODE_ENV=staging node server.js",
+    "live": "NODE_ENV=production node server.js"
   },
   "repository": {
-    "url": "git+https://github.com/OmarElGabry/chat.io.git",
+    "url": "git+https://github.com/yasirmturk/insight-server.git",
     "type": "git"
   },
-  "author": "Omar El Gabry <omar.elgabry.93@gmail.com> (http://omarelgabry.me)",
+  "author": "Yasir M Türk <yasirmturk@gmail.com> (https://www.yasirmturk.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/OmarElGabry/chat.io/issues"
+    "url": "https://github.com/yasirmturk/insight-server/issues"
   },
-  "homepage": "https://github.com/OmarElGabry/chat.io",
+  "homepage": "https://www.yasirmturk.com",
   "dependencies": {
     "aws-sdk": "^2.431.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^1.3.2",
     "cookie-parser": "^1.4.4",
@@ -39,7 +42,6 @@
     "redis": "^2.6.2",
     "socket.io": "^2.0.3",
     "socket.io-redis": "^5.1.0",
-    "transloadit": "^2.0.8",
     "winston": "^2.2.0"
   }
 }

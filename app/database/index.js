@@ -1,19 +1,19 @@
 'use strict';
 
-var config 		= require('../config');
+var config 		= require('../config').db;
 var Mongoose 	= require('mongoose');
 // var logger 		= require('../logger');
 
 // Connect to the database
 // construct the database URI and encode username and password.
 var dbURI = "mongodb://" +
-			encodeURIComponent(config.db.username) + ":" +
-			encodeURIComponent(config.db.password) + "@" +
-			config.db.host + ":" +
-			config.db.port + "/" +
-			config.db.name + "?" +
-			config.db.options;
-// var dbURI = "mongodb://new-user_31:DWgAYE3JBCIwSb7L@cluster0-shard-00-00-v9ca0.mongodb.net:27017,cluster0-shard-00-01-v9ca0.mongodb.net:27017,cluster0-shard-00-02-v9ca0.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true";
+			encodeURIComponent(config.username) + ":" +
+			encodeURIComponent(config.password) + "@" +
+			config.host + ":" +
+			config.port + "/" +
+			config.name + "?" +
+			config.options;
+//console.log(`dbURI: ${dbURI}`);
 Mongoose.connect(dbURI, { useNewUrlParser: true });
 
 // Throw an error if the connection fails

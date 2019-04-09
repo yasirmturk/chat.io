@@ -33,15 +33,12 @@ const init = function(){
 	  function(username, password, done) {
 	    User.findOne({ username: new RegExp(username, 'i'), socialId: null }, function(err, user) {
 	      if (err) { return done(err); }
-
-	      if (!user) {
-	        return done(null, false, { message: 'Incorrect username.' });
-	      }
+				if (!user) { return done(null, false, { username: ' is Incorrect.' }); }
 
 	      user.validatePassword(password, function(err, isMatch) {
 	        	if (err) { return done(err); }
 	        	if (!isMatch){
-	        		return done(null, false, { message: 'Incorrect password.' });
+	        		return done(null, false, { password: ' is Incorrect.' });
 	        	}
 	        	return done(null, user);
 	      });
@@ -59,8 +56,8 @@ const init = function(){
 	};
 
 	// Plug-in Facebook & Twitter Strategies
-	passport.use(new FacebookStrategy(config.facebook, verifySocialAccount));
-	passport.use(new TwitterStrategy(config.twitter, verifySocialAccount));
+	config.facebook && passport.use(new FacebookStrategy(config.facebook, verifySocialAccount));
+	config.twitter && passport.use(new TwitterStrategy(config.twitter, verifySocialAccount));
 
 	return passport;
 }
