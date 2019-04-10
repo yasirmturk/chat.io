@@ -11,6 +11,7 @@ const feed = (users, callback) => {
 	return postModel.find({ creator: { $in: postModel.mapIDs(users) } })
 	.populate('creator').then(result => {
 		console.log(`feed count ${result.length}`);
+		result.forEach(p => { p.viewCount += 1; p.save(); });
 		callback(null, result);
 	}).catch(err => {
 		callback(err, null);
