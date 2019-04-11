@@ -11,11 +11,15 @@ router.use('/api', require('./api'));
 
 // Home page
 router.get('/', function(req, res, next) {
+	res.render('landing', { });
+});
+
+// App page
+router.get('/app', function(req, res, next) {
 	// If user is already logged in, then redirect to rooms page
 	if(req.isAuthenticated()){
 		res.redirect('/rooms');
-	}
-	else{
+	} else {
 		res.render('login', {
 			success: req.flash('success')[0],
 			errors: req.flash('error'),
