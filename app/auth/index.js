@@ -31,7 +31,7 @@ const init = function(){
 	// Plug-in Local Strategy
 	passport.use(new LocalStrategy(
 	  function(username, password, done) {
-	    User.findOne({ username: new RegExp(username, 'i'), socialId: null }, function(err, user) {
+	    User.findOne({ $or: [{ email: new RegExp(username, 'i') }, { username: new RegExp(username, 'i') }]}, function(err, user) {
 	      if (err) { return done(err); }
 				if (!user) { return done(null, false, { username: ' is Incorrect.' }); }
 
