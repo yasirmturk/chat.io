@@ -1,5 +1,6 @@
 
 const postModel = require('../database').models.post;
+const userModel = require('../database').models.user;
 
 const create = (data, callback) => {
 	console.log(`postModel.create: ${JSON.stringify(data)}`);
@@ -18,7 +19,38 @@ const feed = (users, callback) => {
 	});
 }
 
+const updateExpiry = (callback) => {
+	return postModel.find({ expiryDate: null }).populate('creator')
+	.then(posts => {
+		console.log(`posts ${posts.length}`);
+		posts.forEach(post => {
+			const opt = post.creator.options.post;
+			console.log(`opt ${opt.daysToKeep}`);
+			post.expiryDate = new Date(+post.date + (opt.daysToKeep*24*60*60*1000));
+			post.save();
+		});
+		callback();
+	}).catch(err => {
+		callback(err);
+	});
+}
+
+const clean = (callback) => {
+	const timestamp = new Date();
+	console.log(`clean at ${timestamp}`);
+	// return postModel.find({ expiryDate : { $lt: timestamp }})
+	return postModel.deleteMany({ expiryDate : { $lt: timestamp }})
+	.then(cnt => {
+		console.log(`cleaned ${cnt} posts`);
+		callback(null)
+	}).catch(err => {
+		callback(err)
+	})
+}
+
 module.exports = {
 	create,
 	feed,
+	updateExpiry,
+	clean,
 };

@@ -7,6 +7,7 @@ const app  				= express();
 const path 				= require('path');
 const bodyParser 	= require('body-parser');
 const flash 			= require('connect-flash');
+const jobs 				= require('./app/jobs');
 
 // Chat application components
 var routes 		= require('./app/routes');
