@@ -7,11 +7,17 @@ const create = (data, callback) => {
   return new postModel(data).save(callback);
 }
 
-const feed = (users, callback) => {
-	console.log(`postModel.feed: ${JSON.stringify(users)}`);
-	return postModel.find({ creator: { $in: postModel.mapIDs(users) } })
-	.populate('creator').then(result => {
-		console.log(`feed count ${result.length}`);
+const feed = (users, { sort, pagination }, callback) => {
+	// console.log(`postModel.feed: ${JSON.stringify(users)}`);
+	const skip = (pagination && pagination.skip) || 0;
+	const limit = (pagination && pagination.limit) || 100;
+
+	return postModel
+	.find({ creator: { $in: postModel.mapIDs(users) } })
+	.sort(sort || {}).skip(skip).limit(limit)
+	.populate('creator')
+	.then(result => {
+		// console.log(`feed count ${result.length}`);
 		result.forEach(p => { p.viewCount += 1; p.save(); });
 		callback(null, result);
 	}).catch(err => {

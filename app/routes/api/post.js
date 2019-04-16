@@ -39,12 +39,19 @@ router.post('/create', auth.required, (req, res, next) => {
 
 router.get('/feed', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
+	const { sortOrder, pageSize, pageNo } = req.query;
 
 	User.findById(id, (err, user) => {
 		if(err) { return next(err); }
 		if(!user) { return res.sendStatus(403); }
 
-		Post.feed(user.following.concat(id), (err, feed) => {
+		let options = { sort: { date: sortOrder || 1 } };
+		const limit = parseInt(pageSize);
+		if (limit) {
+			options["pagination"] = { skip: (pageNo || 0) * limit, limit };
+		}
+
+		Post.feed(user.following.concat(id), options, (err, feed) => {
 			if(err) { return next(err); }
 
 			res.json({ success: true, feed: feed });
